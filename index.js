@@ -8,9 +8,11 @@ class AbcLog {
     options = options || {}
     this.ss = new SS(options)
     this.level = 'off'
-    this.delimiter = '\n'
-    this.logPropertyName = 'log'
     this.out = process.stdout
+    this.timePropertyName = 'time'
+    this.levelPropertyName = 'level'
+    this.logPropertyName = 'log'
+    this.delimiter = '\n'
     this.levels = {
       trace: 0,
       debug: 1,
@@ -23,24 +25,27 @@ class AbcLog {
     this.logLevelFile = null
     this.logLevelPollSeconds = 10
     Object.assign(this, options)
+    this.logPropertyName = this.logPropertyName || 'log'
+    // probably a good idea to always do but don't want to force it on you.
+    // this.ss.includeKeys.push('error', 'stack')
+    if (this.timePropertyName) {
+      this.ss.includeKeys.push(this.timePropertyName)
+    }
+    if (this.levelPropertyName) {
+      this.ss.includeKeys.push(this.levelPropertyName)
+    }
+    if (this.logPropertyName) {
+      this.ss.includeKeys.push(this.logPropertyName)
+    }
     for (const level of Object.keys(this.levels)) {
       this[level] = (o, replacer, space) => {
         if (this.levels[level] >= this.levels[this.level]) {
-          if (this.logPropertyName) {
-            o = {
-              time: new Date().toISOString(),
-              level,
-              [this.logPropertyName]: o
-            }
-          } else {
-            o = {
-              time: new Date().toISOString(),
-              level,
-              ...o
-            }
-          }
+          let clone = {}
+          if (this.timePropertyName) clone[this.timePropertyName] = new Date().toISOString()
+          if (this.levelPropertyName) clone[this.levelPropertyName] = level
+          clone[this.logPropertyName] = o
           this.out.write(
-            `${this.ss.stringify(o, replacer, space)}${this.delimiter}`)
+            `${this.ss.stringify(clone, replacer, space)}${this.delimiter}`)
         }
       }
     }
@@ -66,7 +71,15 @@ class AbcLog {
 }
 exports = module.exports = AbcLog
 if (require.main === module) {
-  const log = new AbcLog({ level: 'info' })
+  const log = new AbcLog({
+    level: 'info',
+    includeKeys: ['error', 'message', 'stack'],
+    logPropertyName: '',
+    replacerArrayExcludes: true,
+    replaceValues: ['PA']
+    // timePropertyName: undefined,
+    // levelPropertyName: undefined
+  })
   const o = {
     error: new Error('something bad happened'),
     name: 'freddy',
@@ -79,13 +92,13 @@ if (require.main === module) {
     nest: {
       really: {
         deep: {
-          stuff: ['one', 2, 'three']
+          stuff: [{peanut: 'butter'}, 2, 'three']
         }
       }
     }
   }
   o.circular = o
-  log.info(o, 2)
+  log.info(o, ['peanut'], 3)
   // const fs = require('fs')
   // const log = new AbcLog({
   //   // out: fs.createWriteStream('junk.txt'),

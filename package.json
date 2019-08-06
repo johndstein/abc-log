@@ -1,6 +1,6 @@
 {
   "name": "abc-log",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Safe, simple, configurable JSON.stringify logging",
   "keywords": [
     "log",
