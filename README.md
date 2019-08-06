@@ -5,8 +5,10 @@ logging to any output stream.
 
 * Configurable stringify
     (see [abc-stringify](https://www.npmjs.com/package/abc-stringify))
+* Configurable output stream
 * Configurable levels
-* Watch file to change log level
+* Configurable `time`, `level`, and `log` property names
+* Configurable watch file to change log level
 
 ## Quick Start
 
