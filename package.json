@@ -1,6 +1,6 @@
 {
   "name": "abc-log",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Safe, simple, configurable JSON.stringify logging",
   "keywords": [
     "log",
@@ -28,6 +28,6 @@
     "url": "https://github.com/johndstein/abc-log.git"
   },
   "dependencies": {
-    "abc-stringify": "0.0.2"
+    "abc-stringify": "0.0.3"
   }
 }
